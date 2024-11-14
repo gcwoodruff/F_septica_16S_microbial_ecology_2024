@@ -1802,6 +1802,120 @@ summary(lm(Phylogenetic ~ foundress_number, data=adiv))
 #Multiple R-squared:  0.1578,    Adjusted R-squared:  0.1338
 #F-statistic:  6.56 on 1 and 35 DF,  p-value: 0.0149
 
+#looking at evenness
+
+eve_df <- evenness(ps3_no_small)
+eve_df$sample_id <- rownames(eve_df)
+
+eve_adiv <- merge(adiv,eve_df,by="sample_id")
+
+
+eve_adiv$foundress_number <- as.numeric(eve_adiv$foundress_number)
+
+
+ggplot(eve_adiv, aes(x=foundress_number,y=Phylogenetic)) + geom_point() + stat_smooth() +theme_cowplot() 
+
+evefounddf <- data.frame(sample_id=eve_adiv$sample_id,foundress_number=eve_adiv$foundress_number,camargo=eve_adiv$camargo,pielou=eve_adiv$pielou,simpson=eve_adiv$simpson,evar=eve_adiv$evar,bulla=eve_adiv$bulla)
+
+
+eve_melt <- melt(evefounddf, id.vars= c("sample_id","foundress_number"),measure.vars = c("camargo", "pielou","simpson","evar","bulla"))
+
+
+ggplot(eve_melt, aes(x=foundress_number,y=value)) + geom_point() + facet_wrap(~variable,scales="free") +theme_cowplot() + stat_smooth() + scale_y_continuous(limits = c(0,NA)) + xlab("Foundress number") +ylab("Evenness measure") + theme(strip.background = element_rect(colour="white", fill="white")) + scale_y_continuous(oob=scales::rescale_none)
+
+ggsave("evenness.pdf",useDingbats=FALSE)
+    #this is a supplemental figure
+summary(lm(camargo ~ foundress_number, data=evefounddf))
+#Call:
+#lm(formula = camargo ~ foundress_number, data = evefounddf)
+#
+#Residuals:
+#      Min        1Q    Median        3Q       Max
+#-0.059369 -0.002893  0.003430  0.009225  0.012440
+#
+#Coefficients:
+#                  Estimate Std. Error t value Pr(>|t|)
+#(Intercept)      0.9875599  0.0029474 335.066   <2e-16 ***
+#foundress_number 0.0010477  0.0005509   1.902   0.0655 .
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.01446 on 35 degrees of freedom
+#Multiple R-squared:  0.09366,   Adjusted R-squared:  0.06776
+#F-statistic: 3.617 on 1 and 35 DF,  p-value: 0.06546
+summary(lm(pielou ~ foundress_number, data=evefounddf))
+#Call:
+#lm(formula = pielou ~ foundress_number, data = evefounddf)
+#
+#Residuals:
+#     Min       1Q   Median       3Q      Max
+#-0.32177 -0.06073  0.02026  0.11530  0.23308
+#
+#Coefficients:
+#                  Estimate Std. Error t value Pr(>|t|)
+#(Intercept)       0.606137   0.029850  20.306   <2e-16 ***
+#foundress_number -0.002618   0.005580  -0.469    0.642
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.1465 on 35 degrees of freedom
+#Multiple R-squared:  0.006252,  Adjusted R-squared:  -0.02214
+#F-statistic: 0.2202 on 1 and 35 DF,  p-value: 0.6418
+summary(lm(simpson ~ foundress_number, data=evefounddf))
+#Call:
+#lm(formula = simpson ~ foundress_number, data = evefounddf)
+#
+#Residuals:
+#      Min        1Q    Median        3Q       Max
+#-0.076257 -0.033178 -0.006922  0.019618  0.137131
+#
+#Coefficients:
+#                 Estimate Std. Error t value Pr(>|t|)
+#(Intercept)      0.081488   0.010406   7.831 3.34e-09 ***
+#foundress_number 0.001473   0.001945   0.757    0.454
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.05106 on 35 degrees of freedom
+#Multiple R-squared:  0.01611,   Adjusted R-squared:  -0.012
+#F-statistic: 0.5732 on 1 and 35 DF,  p-value: 0.4541
+summary(lm(evar ~ foundress_number, data=evefounddf))
+#Call:
+#lm(formula = evar ~ foundress_number, data = evefounddf)
+#
+#Residuals:
+#     Min       1Q   Median       3Q      Max
+#-0.09521 -0.04041  0.01113  0.03235  0.10013
+#
+#Coefficients:
+#                  Estimate Std. Error t value Pr(>|t|)
+#(Intercept)       0.227211   0.010645  21.345   <2e-16 ***
+#foundress_number -0.005269   0.001990  -2.648    0.012 *
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.05223 on 35 degrees of freedom
+#Multiple R-squared:  0.1669,    Adjusted R-squared:  0.1431
+#F-statistic: 7.014 on 1 and 35 DF,  p-value: 0.01205
+summary(lm(bulla ~ foundress_number, data=evefounddf))
+#Call:
+#lm(formula = bulla ~ foundress_number, data = evefounddf)
+#
+#Residuals:
+#      Min        1Q    Median        3Q       Max
+#-0.195793 -0.066910 -0.001223  0.070614  0.170240
+#
+#Coefficients:
+#                  Estimate Std. Error t value Pr(>|t|)
+#(Intercept)       0.298914   0.019169  15.594   <2e-16 ***
+#foundress_number -0.003221   0.003583  -0.899    0.375
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.09405 on 35 degrees of freedom
+#Multiple R-squared:  0.02257,   Adjusted R-squared:  -0.005359
+#F-statistic: 0.8081 on 1 and 35 DF,  p-value: 0.3748
+
 
 
 
